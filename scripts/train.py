@@ -1,5 +1,6 @@
 max_threads=8
 import os
+import warnings
 
 os.environ["OMP_NUM_THREADS"] = f"{max_threads}" 
 os.environ["OPENBLAS_NUM_THREADS"] = f"{max_threads}" 
@@ -125,6 +126,7 @@ class Trainer:
                 epoch, self.train_loader, self.datahub, self.writer,
                 lambda_adv=self.lambdas['adv'], lambda_ind=self.lambdas['ind'], lambda_rec=self.lambdas['rec'], lambda_cyc=self.lambdas['cyc'],
             )
+            print('Epoch finished')
 
         self.model.save_ckpt(epoch, os.path.join(self.log_dir, "models"))
 
@@ -138,7 +140,7 @@ if __name__ == "__main__":
     parser.add_argument('--gene_id', type=str, help='the gene id file for model training in the input dir')
     parser.add_argument('--indiv_id', type=str, help='the individual id file for model training in the input dir')
     parser.add_argument('--tissue_type', type=str, help='the tissue type file for model training in the input dir')
-    parser.add_argument('--device', type=str, default="cuda:0", help='device to use')
+    parser.add_argument('--device', type=str, default="cpu", help='device to use')
     parser.add_argument('--output_dir', type=str, help='the output directory')
 
     parser.add_argument('--max_epochs', type=int, default=200, help='number of epochs of training')
@@ -207,4 +209,6 @@ if __name__ == "__main__":
         }
     )
     print("Training ...")
+    warnings.filterwarnings('ignore')
+    print("Warnings are being suppressed.")
     trainer.run()
