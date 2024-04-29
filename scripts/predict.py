@@ -1,9 +1,11 @@
 from munch import Munch
 import argparse
 import torch
+import os
+import pandas as pd
 
 from data import DataHub
-from tmp_dataset import ReadTissuePairDataset
+from data import ReadTissuePairDataset
 from model import MTM
 
 if __name__ == "__main__":
@@ -70,7 +72,7 @@ if __name__ == "__main__":
     model.load_ckpt(opt.model_path)
 
     # * Predict the expression profiles on unseen individuals
-    expr_tpm = pd.read_csv(os.path.join(opt.input_dir, opt.input_expr), sep="\t", index_col=0, header=True)
+    expr_tpm = pd.read_csv(os.path.join(opt.input_dir, opt.input_expr), sep="\t", index_col=0)
     expr_tpm = expr_tpm.loc[:, dh.genes_to_use]
     expr_pred =  model.predict(
         expr_tpm,
